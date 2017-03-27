@@ -1,0 +1,14 @@
+<resources>
+    <!-- Default screen margins, per the Android Design guidelines. -->
+    <dimen name="activity_horizontal_margin">16dp</dimen>
+    <dimen name="activity_vertical_margin">16dp</dimen>
+    <dimen name="text_big_button">32sp</dimen>
+    <dimen name="width_big_button">300dp</dimen>
+    <dimen name="layout_marginBottom_button_como_funciona">75dp</dimen>
+    <dimen name="layout_marginTop_button_tomar_foto">40dp</dimen>
+    <dimen name="layout_marginBottom_button_camera">43dp</dimen>
+    <dimen name="layout_marginBottom_text_countdown">190dp</dimen>
+    <dimen name="layout_marginStart_atras_camera">22dp</dimen>
+
+
+</resources>

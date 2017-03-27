@@ -1,0 +1,46 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="vertical"
+    tools:context="com.carrillo.jesus.socialmediaweeduutablet.CameraActivity">
+    <TextureView
+        android:id="@+id/texture"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:layout_alignParentTop="true" />
+    <ImageButton
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        app:srcCompat="@android:drawable/ic_menu_camera"
+        android:layout_marginBottom="@dimen/layout_marginBottom_button_camera"
+        android:id="@+id/btn_takepicture"
+        android:background="@null"
+        android:layout_alignParentBottom="true"
+        android:layout_centerHorizontal="true" />
+
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_above="@+id/btn_takepicture"
+        android:layout_centerHorizontal="true"
+        android:layout_marginBottom="@dimen/layout_marginBottom_text_countdown"
+        android:textColor="@color/textoSobrePrimary"
+        android:id="@+id/textViewCamera" />
+
+
+
+    <ImageButton
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        app:srcCompat="?android:attr/homeAsUpIndicator"
+        android:layout_alignBottom="@+id/btn_takepicture"
+        android:layout_alignParentStart="true"
+        android:layout_marginStart="@dimen/layout_marginStart_atras_camera"
+        android:background="@null"
+        android:id="@+id/imageButtonAtrasCamera" />
+
+
+</RelativeLayout>
