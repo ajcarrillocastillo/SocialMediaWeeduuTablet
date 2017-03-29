@@ -5,7 +5,7 @@
     <string name="image_name">pic</string>
     <string name="saved">Guardado</string>
     <string name="configuration_change">Cofiguración cambiada</string>
-    <string name="permission_deny">¡Lo sentimos!, no puede usar esta apliación sin aceptar los permisos</string>
+    <string name="permission_deny">¡Lo sentimos!, no puede usar esta parte de la aplicacion sin aceptar los permisos</string>
     <string name="count_down">Cuenta atras</string>
     <string name="email">Email:</string>
     <string name="terminos_inicio_frase">Acepta los</string>
@@ -21,4 +21,6 @@
     <string name="como_funciona">Como Funciona</string>
     <string name="text_info_email">Si quiere recibir un correo para compartir en su perfil ponga aqui su dirección de correo</string>
     <string name="text_terminos_rechazados">Tiene que aceptar los terminos y condiciones</string>
+    <string name="no_hay_red">No hay conexion a ninguna red</string>
+    <string name="no_hay_conexion_internet">Su red no tiene conexion a internet</string>
 </resources>

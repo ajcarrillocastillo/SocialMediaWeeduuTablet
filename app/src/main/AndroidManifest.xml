@@ -4,10 +4,15 @@
 
     <uses-permission android:name="android.permission.CAMERA" />
     <uses-permission android:name="android.permission.INTERNET" />
+    <uses-permission android:name="android.permission.ACCESS_WIFI_STATE"/>
+    <uses-permission android:name="android.permission.CHANGE_WIFI_STATE"/>
     <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE" />
-
+    <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE" />
     <uses-feature android:name="android.hardware.camera2.full" />
-
+   <!-- <provider
+        android:name="com.facebook.FacebookContentProvider"
+        android:authorities="com.facebook.app.FacebookContentProvider1253872251369339"
+        android:exported="true" />-->
     <application
         android:allowBackup="true"
         android:icon="@mipmap/ic_launcher"
@@ -33,7 +38,10 @@
             android:name=".ComoFuncionaActivity"
             android:screenOrientation="landscape" />
         <activity android:name=".CompartirActivity"
-            android:screenOrientation="landscape"></activity>
+            android:screenOrientation="landscape"/>
+     <!--   <meta-data
+            android:name="com.facebook.sdk.ApplicationId"
+            android:value="@string/facebook_app_id" />-->
     </application>
 
 </manifest>

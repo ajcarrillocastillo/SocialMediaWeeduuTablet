@@ -4,6 +4,7 @@ import android.Manifest;
 import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
+import android.content.pm.ActivityInfo;
 import android.content.pm.PackageManager;
 import android.graphics.ImageFormat;
 import android.graphics.Matrix;
@@ -57,6 +58,7 @@ public class CameraActivity extends AppCompatActivity {
     private TextureView textureView;
     private Context mContext;
     private String rutaImagen;
+    private boolean iscreatedThread=false ,isopenCamera=false;
     private int width;
     private int height;
     private TextView countDownTextView;
@@ -150,6 +152,7 @@ public class CameraActivity extends AppCompatActivity {
             e.printStackTrace();
         }
         Log.e(TAG, "openCamera X");
+        isopenCamera=true;
     }
     private void showToastShort(final String text) {
         final Activity activity = mActivity;
@@ -167,12 +170,17 @@ public class CameraActivity extends AppCompatActivity {
         @Override
         public void onSurfaceTextureAvailable(SurfaceTexture surface, int width, int height) {
             //open your camera here
-
-            openCamera();
+            if(!isopenCamera) {
+                openCamera();
+            }
         }
         @Override
         public void onSurfaceTextureSizeChanged(SurfaceTexture surface, int width, int height) {
             // Transform you image captured size according to the surface width and height
+            if (!isopenCamera){
+                openCamera();
+            }
+
         }
         @Override
         public boolean onSurfaceTextureDestroyed(SurfaceTexture surface) {
@@ -213,6 +221,7 @@ public class CameraActivity extends AppCompatActivity {
         mBackgroundThread = new HandlerThread("Camera Background");
         mBackgroundThread.start();
         mBackgroundHandler = new Handler(mBackgroundThread.getLooper());
+        iscreatedThread=true;
     }
     protected void stopBackgroundThread() {
         mBackgroundThread.quitSafely();
@@ -223,6 +232,7 @@ public class CameraActivity extends AppCompatActivity {
         } catch (InterruptedException e) {
             e.printStackTrace();
         }
+        iscreatedThread=false;
     }
     protected void takePicture() {
         if(null == cameraDevice) {
@@ -417,6 +427,7 @@ public class CameraActivity extends AppCompatActivity {
             imageReader.close();
             imageReader = null;
         }
+        isopenCamera=false;
     }
     @Override
     public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) {
@@ -432,10 +443,14 @@ public class CameraActivity extends AppCompatActivity {
     protected void onResume() {
         super.onResume();
         Log.e(TAG, "onResume");
-        startBackgroundThread();
+        if(!iscreatedThread) {
+            startBackgroundThread();
+        }
         if (textureView.isAvailable()) {
            // transformImage(textureView.getWidth(),textureView.getHeight());
-            openCamera();
+            if(!isopenCamera) {
+                openCamera();
+            }
         } else {
             textureView.setSurfaceTextureListener(textureListener);
         }
@@ -444,12 +459,28 @@ public class CameraActivity extends AppCompatActivity {
     protected void onPause() {
         Log.e(TAG, "onPause");
         //closeCamera();
-        stopBackgroundThread();
+        if(iscreatedThread) {
+            stopBackgroundThread();
+        }
         super.onPause();
     }
     @Override
+    protected void onStop() {
+        Log.e(TAG, "onStop");
+        if(isopenCamera) {
+            closeCamera();
+        }
+        super.onStop();
+    }
+    @Override
     protected void onDestroy() {
-        closeCamera();
+        Log.e(TAG, "onDestroy");
+        if(iscreatedThread) {
+            stopBackgroundThread();
+        }
+        if(isopenCamera) {
+            closeCamera();
+        }
         super.onDestroy();
     }
 
