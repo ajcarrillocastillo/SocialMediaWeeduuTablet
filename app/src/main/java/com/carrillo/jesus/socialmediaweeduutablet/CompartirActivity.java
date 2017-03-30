@@ -3,6 +3,8 @@ package com.carrillo.jesus.socialmediaweeduutablet;
 import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
+import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
 import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
 import android.net.wifi.WifiManager;
@@ -10,6 +12,8 @@ import android.support.design.widget.Snackbar;
 import android.support.v7.app.ActionBar;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
+import android.util.Base64;
+import android.util.Log;
 import android.view.KeyEvent;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -21,6 +25,7 @@ import android.widget.CheckBox;
 import android.widget.EditText;
 import android.widget.ImageView;
 import android.widget.PopupWindow;
+import android.widget.ProgressBar;
 import android.widget.RadioGroup;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -28,6 +33,7 @@ import android.widget.Toast;
 import org.json.JSONObject;
 
 import java.io.BufferedOutputStream;
+import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
@@ -50,6 +56,8 @@ public class CompartirActivity extends AppCompatActivity {
     private View popupView,mLayout;
     private PopupWindow popupWindow;
     private String ruta;
+    private Context mcontext;
+    private ProgressBar progressBar;
     private int width;
     private int height;
     private boolean flagPopUpOpen=false;
@@ -64,7 +72,9 @@ public class CompartirActivity extends AppCompatActivity {
         actionBar.hide();
         ////////////////////////////////////
         mActivity=this;
+        mcontext = this;
         mLayout=findViewById(R.id.activity_compartir);
+        progressBar = (ProgressBar) findViewById(R.id.progressBar);
         ruta=getIntent().getExtras().getString("ruta");
         width=getIntent().getExtras().getInt("width");
         height=getIntent().getExtras().getInt("height");
@@ -94,12 +104,15 @@ public class CompartirActivity extends AppCompatActivity {
         btn_Compartir.setOnClickListener(new View.OnClickListener(){
             @Override
             public void onClick(View v){
-
+                progressBar.setVisibility(View.VISIBLE);
              if(checkTerminosYCondiciones.isChecked()){
                  if(editTextEmail.getText().toString().isEmpty()){
                      if(comprobarConectividad()) {
-                        // conexion();
-                         showToastShort("Se compartiría la foto sin enviar Email" + ruta);
+
+                         new ConexionAsincTask(mcontext, ruta, width, height, editTextEmail.getText().toString(), progressBar).execute();
+
+                     } else {
+                         progressBar.setVisibility(View.GONE);
                      }
                  }else{
                      Pattern mPattern = Pattern.compile("^.+@([a-z0-9]+[-.])+[a-z0-9]+$");
@@ -107,19 +120,23 @@ public class CompartirActivity extends AppCompatActivity {
                      Matcher matcher = mPattern.matcher(editTextEmail.getText().toString());
                      if(!matcher.find())
                      {
+                         progressBar.setVisibility(View.GONE);
                          showSnackBar("Email no valido");
+
                      }else{
                             if (comprobarConectividad()) {
                                // conexion();
 
+                                new ConexionAsincTask(mcontext, ruta, width, height, editTextEmail.getText().toString(), progressBar).execute();
 
-                                    showToastShort("Se compartiría la foto" + ruta + "con el email:" + editTextEmail.getText().toString());
 
-
+                            } else {
+                                progressBar.setVisibility(View.GONE);
                             }
                      }
                  }
              }else{
+                 progressBar.setVisibility(View.GONE);
                  showSnackBarTerminosyCondiciones(getString(R.string.text_terminos_rechazados));
              }
             }
@@ -189,42 +206,42 @@ public class CompartirActivity extends AppCompatActivity {
 
     }
 
-    public void conexion(){
+    /*  public void conexion(){
 
 
-            // Obtener la conexión
-            HttpURLConnection con = null;
-        try {
-            URL url = new URL("http://serverapppepe.hol.es/api/v1/compartir");
+              // Obtener la conexión
+              HttpURLConnection con = null;
+          try {
+              URL url = new URL("http://serverapppepe.hol.es/api/v1/compartir");
 
 
-                // Construir los datos a enviar
-                String data = "body=" + URLEncoder.encode("","UTF-8");
+                  // Construir los datos a enviar
+                  String data = "body=" + URLEncoder.encode("","UTF-8");
 
-                con = (HttpURLConnection)url.openConnection();
+                  con = (HttpURLConnection)url.openConnection();
 
-                // Activar método POST
-                con.setDoOutput(true);
+                  // Activar método POST
+                  con.setDoOutput(true);
 
-                // Tamaño previamente conocido
-                con.setFixedLengthStreamingMode(data.getBytes().length);
+                  // Tamaño previamente conocido
+                  con.setFixedLengthStreamingMode(data.getBytes().length);
 
-                // Establecer application/x-www-form-urlencoded debido a la simplicidad de los datos
-                con.setRequestProperty("Content-Type","application/x-www-form-urlencoded");
+                  // Establecer application/x-www-form-urlencoded debido a la simplicidad de los datos
+                  con.setRequestProperty("Content-Type","application/x-www-form-urlencoded");
 
-                OutputStream out = new BufferedOutputStream(con.getOutputStream());
+                  OutputStream out = new BufferedOutputStream(con.getOutputStream());
 
-                out.write(data.getBytes());
-                out.flush();
-                out.close();
+                  out.write(data.getBytes());
+                  out.flush();
+                  out.close();
 
-            } catch (IOException e) {
-                e.printStackTrace();
-            } finally {
-                if(con!=null)
-                    con.disconnect();
-            }
-    }
+              } catch (IOException e) {
+                  e.printStackTrace();
+              } finally {
+                  if(con!=null)
+                      con.disconnect();
+              }
+      }*/
     private void popUpTerminosyCondiciones() {
         if (!flagPopUpOpen) {
             flagPopUpOpen=true;
@@ -265,11 +282,11 @@ public class CompartirActivity extends AppCompatActivity {
     public boolean comprobarConectividad(){
        if (!isNetDisponible()){
            Snackbar.make(mLayout,getString(R.string.no_hay_red),Snackbar.LENGTH_LONG)
-                   .setAction("Conectar Wifi", new View.OnClickListener() {
+                 /*  .setAction("Conectar Wifi", new View.OnClickListener() {
                        @Override public void onClick(View view){
                            WifiManager wifiManager = (WifiManager) getSystemService(Context.WIFI_SERVICE);
                            wifiManager.setWifiEnabled(true);
-                       }})
+                       }})*/
                    .show();
 
 
@@ -292,7 +309,8 @@ public class CompartirActivity extends AppCompatActivity {
 
         return (actNetInfo != null && actNetInfo.isConnected());
     }
-    public Boolean isOnlineNet() {
+
+    public boolean isOnlineNet() {
 
         try {
             Process p = java.lang.Runtime.getRuntime().exec("ping -c 1 www.google.es");
@@ -333,6 +351,21 @@ public class CompartirActivity extends AppCompatActivity {
         }
     }
 
+
+    @Override
+    protected void onResume() {
+        super.onResume();
+        fullScreenCall();
+    }
+
+    public void fullScreenCall() {
+
+        //for new api versions.
+        View decorView = getWindow().getDecorView();
+        int uiOptions = View.SYSTEM_UI_FLAG_HIDE_NAVIGATION | View.SYSTEM_UI_FLAG_IMMERSIVE_STICKY;
+        decorView.setSystemUiVisibility(uiOptions);
+
+    }
 
 
     ////cosas varias

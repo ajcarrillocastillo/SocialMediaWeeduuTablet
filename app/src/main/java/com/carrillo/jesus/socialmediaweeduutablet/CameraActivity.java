@@ -442,6 +442,7 @@ public class CameraActivity extends AppCompatActivity {
     @Override
     protected void onResume() {
         super.onResume();
+        fullScreenCall();
         Log.e(TAG, "onResume");
         if(!iscreatedThread) {
             startBackgroundThread();
@@ -454,6 +455,15 @@ public class CameraActivity extends AppCompatActivity {
         } else {
             textureView.setSurfaceTextureListener(textureListener);
         }
+    }
+
+    public void fullScreenCall() {
+
+        //for new api versions.
+        View decorView = getWindow().getDecorView();
+        int uiOptions = View.SYSTEM_UI_FLAG_HIDE_NAVIGATION | View.SYSTEM_UI_FLAG_IMMERSIVE_STICKY;
+        decorView.setSystemUiVisibility(uiOptions);
+
     }
     @Override
     protected void onPause() {

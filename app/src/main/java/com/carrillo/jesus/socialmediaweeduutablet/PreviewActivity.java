@@ -94,4 +94,19 @@ public class PreviewActivity extends AppCompatActivity {
             ///
             super.onBackPressed();
         }
+
+    @Override
+    protected void onResume() {
+        super.onResume();
+        fullScreenCall();
+    }
+
+    public void fullScreenCall() {
+
+        //for new api versions.
+        View decorView = getWindow().getDecorView();
+        int uiOptions = View.SYSTEM_UI_FLAG_HIDE_NAVIGATION | View.SYSTEM_UI_FLAG_IMMERSIVE_STICKY;
+        decorView.setSystemUiVisibility(uiOptions);
+
+    }
 }

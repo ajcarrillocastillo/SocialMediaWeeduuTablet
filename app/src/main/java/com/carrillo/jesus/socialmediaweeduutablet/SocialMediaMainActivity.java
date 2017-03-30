@@ -5,6 +5,7 @@ import android.app.Activity;
 import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.net.Uri;
+import android.os.Build;
 import android.provider.Settings;
 import android.support.annotation.NonNull;
 import android.support.v4.app.ActivityCompat;
@@ -35,6 +36,7 @@ public class SocialMediaMainActivity extends AppCompatActivity {
         setContentView(R.layout.activity_social_media_main);
         ActionBar actionBar = getSupportActionBar();
         actionBar.hide();
+
         mLayout = findViewById(R.id.activity_social_media_main);
 
         // Here, thisActivity is the current activity
@@ -159,6 +161,7 @@ private void permisos(){
     }
 
 
+
     @Override
     public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) {
         switch (requestCode) {
@@ -262,5 +265,18 @@ private void permisos(){
         activity.startActivity(intent);
     }
 
+    @Override
+    protected void onResume() {
+        super.onResume();
+        fullScreenCall();
+    }
 
+    public void fullScreenCall() {
+
+        //for new api versions.
+        View decorView = getWindow().getDecorView();
+        int uiOptions = View.SYSTEM_UI_FLAG_HIDE_NAVIGATION | View.SYSTEM_UI_FLAG_IMMERSIVE_STICKY;
+        decorView.setSystemUiVisibility(uiOptions);
+
+    }
 }
