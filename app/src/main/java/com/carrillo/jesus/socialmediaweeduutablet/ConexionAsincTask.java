@@ -5,7 +5,9 @@ package com.carrillo.jesus.socialmediaweeduutablet;
  */
 
 
+import android.app.Activity;
 import android.content.Context;
+import android.content.Intent;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.os.AsyncTask;
@@ -16,6 +18,8 @@ import android.widget.ProgressBar;
 import android.widget.Toast;
 
 import org.apache.commons.io.IOUtils;
+import org.json.JSONException;
+import org.json.JSONObject;
 
 import java.io.BufferedInputStream;
 import java.io.ByteArrayOutputStream;
@@ -40,16 +44,6 @@ public class ConexionAsincTask extends AsyncTask<String, String, String> {
     HttpURLConnection urlConnection;
     ProgressBar barraCarga;
 
-    boolean existeAcontecimiento = true;
-
-    /*public ConexionAsincTask(Context myContext, String image,String email ,ProgressBar barraCarga) {
-        this.image = image;
-        this.email=email;
-        this.myContext=myContext;
-
-
-
-    }*/
     public ConexionAsincTask(Context myContext, String ruta, int width, int height, String email, ProgressBar barraCarga) {
         this.ruta = ruta;
         this.width = width;
@@ -70,11 +64,15 @@ public class ConexionAsincTask extends AsyncTask<String, String, String> {
 
     @Override
     protected String doInBackground(String... args) {
-        image = getStringFromBitmap(recogerBitmapRuta(ruta, width, height));
+        Bitmap imageBitmap = recogerBitmapRuta(ruta, width, height);
+        image = encodeToBase64(imageBitmap, Bitmap.CompressFormat.JPEG, 100);
+
         Log.e("imagen", image);
         String result = "error no hemos recogido nada";
         String query = "http://serverapppepe.hol.es/api/v1/compartir";
+        //String json = "{\"image\":\"esto parece una imagen\",\"email\":\"" + email + "\"}";
         String json = "{\"image\":\"" + image + "\",\"email\":\"" + email + "\"}";
+
         try {
             URL url = new URL(query);
             HttpURLConnection conn = (HttpURLConnection) url.openConnection();
@@ -109,17 +107,23 @@ public class ConexionAsincTask extends AsyncTask<String, String, String> {
     @Override
     protected void onPostExecute(String result) {
 
-        Toast.makeText(mContext, result, Toast.LENGTH_SHORT).show();
-        //JSONObject jsonObject = new JSONObject(result);
-        if (this.existeAcontecimiento) {
+        try {
+            JSONObject jsonObject = new JSONObject(result);
+            if (jsonObject.getBoolean("error")) {
+                Toast.makeText(mContext, "no se ha podido compartir la imagen", Toast.LENGTH_SHORT).show();
+                Toast.makeText(mContext, jsonObject.getString("message"), Toast.LENGTH_SHORT).show();
 
-            //((Activity) myContext).finish();
-        } else {
-            //le pasamos la vista del boton y mandamos el mensaje
-          /*  Snackbar.make(boton, "No Existe Acontecimiento", Snackbar.LENGTH_LONG)
-                    .setAction("Action", null).show();*/
-
+            } else {
+                Toast.makeText(mContext, "se ha compartido con exito", Toast.LENGTH_LONG).show();
+                Intent intent = new Intent(mContext, SocialMediaMainActivity.class);
+                intent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
+                mContext.startActivity(intent);
+                ((Activity) mContext).finish();
+            }
+        } catch (JSONException e) {
+            e.printStackTrace();
         }
+
 
         barraCarga.setVisibility(View.GONE);
 
@@ -148,4 +152,13 @@ public class ConexionAsincTask extends AsyncTask<String, String, String> {
         Bitmap imageBmp = BitmapFactory.decodeFile(ruta, opt);
         return imageBmp;
     }
+
+    public static String encodeToBase64(Bitmap image, Bitmap.CompressFormat compressFormat, int quality) {
+        ByteArrayOutputStream byteArrayOS = new ByteArrayOutputStream();
+        image.compress(compressFormat, quality, byteArrayOS);
+        return Base64.encodeToString(byteArrayOS.toByteArray(), Base64.DEFAULT);
+    }
+
+
+
 }

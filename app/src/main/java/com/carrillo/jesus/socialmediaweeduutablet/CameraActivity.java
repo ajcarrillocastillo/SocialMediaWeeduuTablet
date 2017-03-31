@@ -103,9 +103,9 @@ public class CameraActivity extends AppCompatActivity {
         takePictureButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                new CountDownTimer(inicioContador, 1000) {
+                new CountDownTimer((inicioContador), 1000) {
                     public void onTick(long millisUntilFinished) {
-                        countDownTextView.setText(getString(R.string.count_down)+": " + millisUntilFinished / 1000);
+                        countDownTextView.setText(getString(R.string.count_down) + ": " + (millisUntilFinished) / 1000);
                     }
 
                     public void onFinish() {
@@ -458,8 +458,7 @@ public class CameraActivity extends AppCompatActivity {
     }
 
     public void fullScreenCall() {
-
-        //for new api versions.
+        //ocultar el menu de navegacion
         View decorView = getWindow().getDecorView();
         int uiOptions = View.SYSTEM_UI_FLAG_HIDE_NAVIGATION | View.SYSTEM_UI_FLAG_IMMERSIVE_STICKY;
         decorView.setSystemUiVisibility(uiOptions);

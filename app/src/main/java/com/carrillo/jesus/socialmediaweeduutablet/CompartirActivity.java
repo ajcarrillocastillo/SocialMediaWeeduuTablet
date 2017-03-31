@@ -205,50 +205,13 @@ public class CompartirActivity extends AppCompatActivity {
 
 
     }
-
-    /*  public void conexion(){
-
-
-              // Obtener la conexión
-              HttpURLConnection con = null;
-          try {
-              URL url = new URL("http://serverapppepe.hol.es/api/v1/compartir");
-
-
-                  // Construir los datos a enviar
-                  String data = "body=" + URLEncoder.encode("","UTF-8");
-
-                  con = (HttpURLConnection)url.openConnection();
-
-                  // Activar método POST
-                  con.setDoOutput(true);
-
-                  // Tamaño previamente conocido
-                  con.setFixedLengthStreamingMode(data.getBytes().length);
-
-                  // Establecer application/x-www-form-urlencoded debido a la simplicidad de los datos
-                  con.setRequestProperty("Content-Type","application/x-www-form-urlencoded");
-
-                  OutputStream out = new BufferedOutputStream(con.getOutputStream());
-
-                  out.write(data.getBytes());
-                  out.flush();
-                  out.close();
-
-              } catch (IOException e) {
-                  e.printStackTrace();
-              } finally {
-                  if(con!=null)
-                      con.disconnect();
-              }
-      }*/
     private void popUpTerminosyCondiciones() {
         if (!flagPopUpOpen) {
             flagPopUpOpen=true;
             layoutInflater = (LayoutInflater) getBaseContext().getSystemService(LAYOUT_INFLATER_SERVICE);
             popupView = layoutInflater.inflate(R.layout.pop_up_terminos_y_condiciones, null);
-            popupWindow = new PopupWindow(popupView, RadioGroup.LayoutParams.WRAP_CONTENT,
-                    RadioGroup.LayoutParams.WRAP_CONTENT);
+            popupWindow = new PopupWindow(popupView, RadioGroup.LayoutParams.MATCH_PARENT,
+                    RadioGroup.LayoutParams.MATCH_PARENT);
             btn_AceptarTerminos = (Button) popupView.findViewById(R.id.buttonAceptarTerminos);
             btn_AceptarTerminos.setOnClickListener(new Button.OnClickListener() {
 
@@ -282,11 +245,6 @@ public class CompartirActivity extends AppCompatActivity {
     public boolean comprobarConectividad(){
        if (!isNetDisponible()){
            Snackbar.make(mLayout,getString(R.string.no_hay_red),Snackbar.LENGTH_LONG)
-                 /*  .setAction("Conectar Wifi", new View.OnClickListener() {
-                       @Override public void onClick(View view){
-                           WifiManager wifiManager = (WifiManager) getSystemService(Context.WIFI_SERVICE);
-                           wifiManager.setWifiEnabled(true);
-                       }})*/
                    .show();
 
 
@@ -359,132 +317,11 @@ public class CompartirActivity extends AppCompatActivity {
     }
 
     public void fullScreenCall() {
-
-        //for new api versions.
+        //ocultar el menu de navegacion
         View decorView = getWindow().getDecorView();
         int uiOptions = View.SYSTEM_UI_FLAG_HIDE_NAVIGATION | View.SYSTEM_UI_FLAG_IMMERSIVE_STICKY;
         decorView.setSystemUiVisibility(uiOptions);
 
     }
-
-
-    ////cosas varias
-/*
-    public static String POST(String url){
-        InputStream inputStream = null;
-        String result = "";
-        try {
-
-            // 1. create HttpClient
-            HttpClient httpclient = new DefaultHttpClient();
-
-            // 2. make POST request to the given URL
-            HttpPost httpPost = new HttpPost(url);
-
-            String json = "";
-
-            // 3. build jsonObject
-            JSONObject jsonObject = new JSONObject();
-            jsonObject.accumulate("name", person.getName());
-            jsonObject.accumulate("country", person.getCountry());
-            jsonObject.accumulate("twitter", person.getTwitter());
-
-            // 4. convert JSONObject to JSON to String
-            json = jsonObject.toString();
-
-            // ** Alternative way to convert Person object to JSON string usin Jackson Lib
-            // ObjectMapper mapper = new ObjectMapper();
-            // json = mapper.writeValueAsString(person);
-
-            // 5. set json to StringEntity
-            StringEntity se = new StringEntity(json);
-
-            // 6. set httpPost Entity
-            httpPost.setEntity(se);
-
-            // 7. Set some headers to inform server about the type of the content
-            httpPost.setHeader("Accept", "application/json");
-            httpPost.setHeader("Content-type", "application/json");
-
-            // 8. Execute POST request to the given URL
-            HttpResponse httpResponse = httpclient.execute(httpPost);
-
-            // 9. receive response as inputStream
-            inputStream = httpResponse.getEntity().getContent();
-
-            // 10. convert inputstream to string
-            if(inputStream != null)
-                result = convertInputStreamToString(inputStream);
-            else
-                result = "Did not work!";
-
-        } catch (Exception e) {
-            Log.d("InputStream", e.getLocalizedMessage());
-        }
-
-        // 11. return result
-        return result;
-    }
-
-    public boolean isConnected(){
-        ConnectivityManager connMgr = (ConnectivityManager) getSystemService(Activity.CONNECTIVITY_SERVICE);
-        NetworkInfo networkInfo = connMgr.getActiveNetworkInfo();
-        if (networkInfo != null && networkInfo.isConnected())
-            return true;
-        else
-            return false;
-    }
-    @Override
-    public void onClick(View view) {
-
-        switch(view.getId()){
-            case R.id.btnPost:
-                if(!validate())
-                    Toast.makeText(getBaseContext(), "Enter some data!", Toast.LENGTH_LONG).show();
-                // call AsynTask to perform network operation on separate thread
-                new HttpAsyncTask().execute("http://hmkcode.appspot.com/jsonservlet");
-                break;
-        }
-
-    }
-    private class HttpAsyncTask extends AsyncTask<String, Void, String> {
-        @Override
-        protected String doInBackground(String... urls) {
-
-            person = new Person();
-            person.setName(etName.getText().toString());
-            person.setCountry(etCountry.getText().toString());
-            person.setTwitter(etTwitter.getText().toString());
-
-            return POST(urls[0],person);
-        }
-        // onPostExecute displays the results of the AsyncTask.
-        @Override
-        protected void onPostExecute(String result) {
-            Toast.makeText(getBaseContext(), "Data Sent!", Toast.LENGTH_LONG).show();
-        }
-    }
-
-    private boolean validate(){
-        if(etName.getText().toString().trim().equals(""))
-            return false;
-        else if(etCountry.getText().toString().trim().equals(""))
-            return false;
-        else if(etTwitter.getText().toString().trim().equals(""))
-            return false;
-        else
-            return true;
-    }
-    private static String convertInputStreamToString(InputStream inputStream) throws IOException{
-        BufferedReader bufferedReader = new BufferedReader( new InputStreamReader(inputStream));
-        String line = "";
-        String result = "";
-        while((line = bufferedReader.readLine()) != null)
-            result += line;
-
-        inputStream.close();
-        return result;
-
-    }*/
 
 }
